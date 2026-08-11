@@ -1,65 +1,65 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gaming Records | Fortnite Account Value</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#070812;color:#f7f7ff;font-family:Inter,system-ui,Arial,sans-serif}
-header{padding:20px 6%;display:flex;justify-content:space-between;align-items:center;background:#0b0d18;border-bottom:1px solid #242941}.logo{font-size:22px;font-weight:1000}.logo i{font-style:normal;color:#a855f7}header span{color:#9ba4c0;font-weight:700}
-.hero{text-align:center;padding:75px 20px 55px;background:radial-gradient(circle at 50% 0,#44217b,#17132b 40%,#070812 75%)}.pill{display:inline-block;padding:7px 12px;border-radius:99px;background:#24153e;color:#d8b4fe;font-size:12px;font-weight:900}
-h1{font-size:clamp(40px,8vw,72px);line-height:.98;margin:17px 0 12px}.hero p{font-size:18px;color:#b5bdd3}
-.wrap{max-width:1000px;margin:auto;padding:25px 20px 70px}.card{background:#101425;border:1px solid #292f48;border-radius:22px;padding:25px;margin-top:20px;box-shadow:0 18px 60px #0006}
-.search{display:flex;gap:10px;margin-top:18px}@media(max-width:650px){.search{flex-direction:column}}
-input,select{background:#080b15;color:white;border:1px solid #3a405b;border-radius:13px;padding:17px;font-size:16px}input{flex:1}button{background:linear-gradient(90deg,#7c3aed,#ec4899);color:#fff;border:0;border-radius:13px;padding:17px 25px;font-weight:1000;font-size:16px}
-button:disabled{opacity:.6}.status{min-height:25px;color:#9ca5bf;margin-top:14px}.error{color:#fb7185}.result{display:none}.top{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.name{font-size:30px;font-weight:1000;margin:8px 0}.muted{color:#9ba4be}.price{font-size:54px;font-weight:1000;color:#c084fc}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}@media(max-width:650px){.grid{grid-template-columns:1fr 1fr}}
-.stat{background:#090d18;border:1px solid #292f48;border-radius:15px;padding:17px}.stat small{display:block;color:#8993ae;font-weight:800}.stat b{font-size:25px;display:block;margin-top:5px}.note{font-size:13px;color:#8e97b2;line-height:1.5;margin-top:22px}footer{text-align:center;color:#6f7892;padding:30px;border-top:1px solid #1d2335}
-</style>
-</head>
-<body>
-<header><div class="logo">🎮 GAMING <i>RECORDS</i></div><span>FN Account Value</span></header>
-<section class="hero"><div class="pill">FORTNITE ACCOUNT CHECKER</div><h1>Find a player</h1><p>Enter an Epic display name to retrieve available public player information.</p></section>
-<main class="wrap">
-<section class="card">
-<h2>🔎 Fortnite username</h2>
-<div class="search"><input id="username" maxlength="32" placeholder="Enter Epic display name"><select id="platform"><option value="epic">Epic</option><option value="psn">PlayStation</option><option value="xbl">Xbox</option><option value="nintendo">Nintendo</option><option value="steam">Steam</option></select><button id="go">CHECK ACCOUNT</button></div>
-<div id="status" class="status">Ready to search.</div>
-</section>
-<section id="result" class="card result">
-<div class="top"><div><div class="pill">PLAYER FOUND</div><div id="name" class="name">—</div><div id="account" class="muted">—</div></div><div><div class="muted">Estimated public-data value</div><div id="value" class="price">€—</div></div></div>
-<div class="grid">
-<div class="stat"><small>🏆 Wins</small><b id="wins">—</b></div><div class="stat"><small>🎯 Kills</small><b id="kills">—</b></div><div class="stat"><small>🎮 Matches</small><b id="matches">—</b></div><div class="stat"><small>📊 K/D</small><b id="kd">—</b></div><div class="stat"><small>🥇 Win rate</small><b id="wr">—</b></div><div class="stat"><small>⭐ Platform</small><b id="plat">—</b></div>
-</div>
-<div class="note"><b>What this value means:</b> it is an estimate based on public player data. It is <b>not</b> an official Fortnite/Epic valuation and does not claim to know the player's private Locker. A username lookup can resolve an account and public stats, but it cannot reliably reveal every cosmetic in the Locker.</div>
-</section>
-</main>
-<footer>Gaming Records © 2026 · Unofficial fan project · Not affiliated with Epic Games.</footer>
-<script>
-const API='https://fnapi.osirion.gg';
-const $=x=>document.getElementById(x);
-function status(t,e=false){$('status').textContent=t;$('status').className='status'+(e?' error':'')}
-function num(o,keys){if(!o||typeof o!=='object')return null;for(const k of keys)if(o[k]!=null&&!isNaN(Number(o[k])))return Number(o[k]);for(const k in o){if(o[k]&&typeof o[k]==='object'){const x=num(o[k],keys);if(x!=null)return x}}return null}
-async function check(){
- const n=$('username').value.trim(), p=$('platform').value;
- if(!n)return status('Enter a Fortnite username first.',true);
- $('go').disabled=true;$('result').style.display='none';status('Searching for '+n+'…');
- try{
-   const u=API+'/v1/accounts/lookup-by-display-name?displayName='+encodeURIComponent(n)+'&platform='+encodeURIComponent(p);
-   const r=await fetch(u,{headers:{accept:'application/json'}});
-   if(r.status===404)throw Error('Account not found. Check the display name and platform.');
-   if(!r.ok)throw Error('The lookup service is temporarily unavailable.');
-   const d=await r.json(), a=(d.accounts||[])[0];
-   if(!a)throw Error('No matching account was returned.');
-   const id=a.accountId||a.id;
-   let s=null;try{const sr=await fetch(API+'/v1/stats/account?accountId='+encodeURIComponent(id),{headers:{accept:'application/json'}});if(sr.ok)s=await sr.json()}catch(_){}
-   const wins=num(s,['wins','winCount'])??0,kills=num(s,['kills','killCount'])??0,matches=num(s,['matches','matchesPlayed','games'])??0;
-   const kd=num(s,['kd','kdr','killDeathRatio'])??(matches?kills/Math.max(1,matches-wins):0),wr=matches?wins/matches*100:0;
-   const estimate=Math.round(20+wins*1.25+kills*.02+matches*.015+kd*8);
-   $('name').textContent=n;$('account').textContent='Epic Account ID: '+id;$('value').textContent='€'+estimate.toLocaleString('en-FI');
-   $('wins').textContent=wins.toLocaleString();$('kills').textContent=kills.toLocaleString();$('matches').textContent=matches.toLocaleString();$('kd').textContent=Number(kd).toFixed(2);$('wr').textContent=wr.toFixed(1)+'%';$('plat').textContent=p.toUpperCase();
-   $('result').style.display='block';$('result').scrollIntoView({behavior:'smooth'});status('Account found.');
- }catch(e){status(e.message||'Could not check the account.',true)}
- finally{$('go').disabled=false}
+const $ = x => document.getElementById(x);
+
+function status(t, e = false) {
+  $('status').textContent = t;
+  $('status').className = 'status' + (e ? ' error' : '');
 }
-$('go').onclick=check;$('username').onkeydown=e=>{if(e.key==='Enter')check()};
-</script>
-</body></html>
+
+function check() {
+  const username = $('username').value.trim();
+
+  if (!username) {
+    status('Enter a Fortnite username first.', true);
+    return;
+  }
+
+  let value = 20;
+
+  const rareSkins = [
+    'renegade',
+    'blackknight',
+    'skull',
+    'ikonik',
+    'galaxy'
+  ];
+
+  rareSkins.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.checked) {
+      switch (id) {
+        case 'renegade': value += 500; break;
+        case 'blackknight': value += 250; break;
+        case 'skull': value += 300; break;
+        case 'ikonik': value += 200; break;
+        case 'galaxy': value += 150; break;
+      }
+    }
+  });
+
+  $('name').textContent = username;
+  $('account').textContent = 'Estimated Fortnite Account Value';
+  $('value').textContent = '€' + value;
+
+  $('wins').textContent = 'N/A';
+  $('kills').textContent = 'N/A';
+  $('matches').textContent = 'N/A';
+  $('kd').textContent = 'N/A';
+  $('wr').textContent = 'N/A';
+  $('plat').textContent = $('platform').value.toUpperCase();
+
+  $('result').style.display = 'block';
+
+  status('Account value estimated successfully.');
+}
+
+$('go').onclick = check;
+
+$('username').addEventListener('keydown', e => {
+  if (e.key === 'Enter') check();
+});<h3>Rare Skins</h3>
+
+<label><input type="checkbox" id="renegade"> Renegade Raider</label><br>
+<label><input type="checkbox" id="blackknight"> Black Knight</label><br>
+<label><input type="checkbox" id="skull"> OG Skull Trooper</label><br>
+<label><input type="checkbox" id="ikonik"> Ikonik</label><br>
+<label><input type="checkbox" id="galaxy"> Galaxy</label><br><br>
